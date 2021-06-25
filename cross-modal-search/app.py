@@ -30,8 +30,11 @@ def index_restful():
 
 
 def check_index_result(resp):
+    print(len(resp.data.docs))
     for doc in resp.data.docs:
         _doc = Document(doc)
+        print(_doc)
+        print("heyy")
         print(f'{_doc.id[:10]}, buffer: {len(_doc.buffer)}, mime_type: {_doc.mime_type}, modality: {_doc.modality}, embed: {_doc.embedding.shape}, uri: {_doc.uri[:20]}')
 
 
@@ -46,6 +49,7 @@ def check_query_result(resp):
 
 def index(data_set, num_docs, request_size):
     flow = Flow.load_config('flows/flow-index.yml')
+    print(f'flow : {flow}')
     with flow:
         with TimeContext(f'QPS: indexing {num_docs}', logger=flow.logger):
             flow.index(
@@ -92,6 +96,8 @@ def main(task, num_docs, request_size, data_set):
                     \n +------------------------------------------------------------------------------------+'
             )
             sys.exit(1)
+
+
     if 'query' in task:
         if not os.path.exists(workspace):
             logger.error(f'The directory {workspace} does not exist. Please index first via `python app.py -t index`')
@@ -99,6 +105,8 @@ def main(task, num_docs, request_size, data_set):
 
     if task == 'index':
         index(data_set, num_docs, request_size)
+
+
     elif task == 'index_restful':
         index_restful()
     elif task == 'query':
